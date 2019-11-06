@@ -95,30 +95,31 @@ public class EncryptController {
      * @return 
      */
     private java.awt.image.BufferedImage encrypt(String message) {
-        java.awt.image.BufferedImage newImg = copyImage();
+        java.awt.image.BufferedImage newImg = copyImage(currentImg);
                 
         int width = newImg.getWidth();
         int height = newImg.getHeight();
 
         int count = 0;
-        String bit = utility.Biswise.toBitString(message);
+        String bits = utility.Biswise.toBitString(message);
         
         for (int i = 0; i < width; ++i) {
-            for (int j = 0; j < height; j++) {
+            for (int j = 0; j < height; ++j) {
                 
                 //  Set new RGB
-                if (count < bit.length()) {
+                if (count < bits.length()) {
                     int oldRGB = newImg.getRGB(i, j);
                     
-                    System.out.println("" + bit.charAt(count));
+                    System.out.println("" + bits.charAt(count));
                     
-                    int newRGB = utility.Biswise.setLastBit(oldRGB, Integer.parseInt(bit.charAt(count) + ""));
+                    int newRGB = utility.Biswise.setLastBit(oldRGB, Integer.parseInt(bits.charAt(count) + ""));
                     newImg.setRGB(i, j, newRGB);
                     ++count;
                 
                 // Set null char
-                } else if (count < bit.length() + 8) {
-                    newImg.setRGB(i, j, utility.Biswise.setLastBit(j, 0));
+                } else if (count < bits.length() + 8) {
+                    Integer oldRGB = newImg.getRGB(i, j);
+                    newImg.setRGB(i, j, utility.Biswise.setLastBit(oldRGB, 0));
                     ++count;
                 
                 // Return img
@@ -136,16 +137,16 @@ public class EncryptController {
      * 
      * @return 
      */
-    private java.awt.image.BufferedImage copyImage() {
-        java.awt.image.BufferedImage b = new java.awt.image.BufferedImage(
-                currentImg.getWidth(), 
-                currentImg.getHeight(), 
-                currentImg.getType()
+    private java.awt.image.BufferedImage copyImage(java.awt.image.BufferedImage oldImg) {
+        java.awt.image.BufferedImage newImg = new java.awt.image.BufferedImage(
+                oldImg.getWidth(), 
+                oldImg.getHeight(), 
+                oldImg.getType()
         );
-        java.awt.Graphics g = b.getGraphics();
-        g.drawImage(currentImg, 0, 0, null);
+        java.awt.Graphics g = newImg.getGraphics();
+        g.drawImage(oldImg, 0, 0, null);
         g.dispose();
-        return b;
+        return newImg;
     }
     
     /**

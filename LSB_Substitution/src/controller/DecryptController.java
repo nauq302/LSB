@@ -20,24 +20,21 @@ public class DecryptController {
     private String imgExtension;
 
     public DecryptController() {
-        fileChooser = new  javax.swing.JFileChooser();
+        fileChooser = new javax.swing.JFileChooser();
         frame = new view.DecryptView();
-        
+
         frame.getBtnBroswe().addActionListener((ActionEvent ae) -> {
             openFile();
         });
-        
+
         frame.getBtnShowMessage().addActionListener((ActionEvent ae) -> {
             String str = decrypt(currentImg);
             frame.getTxtSecretText().setText(str);
         });
-        
+
         frame.setVisible(true);
     }
 
-    
-    
-    
     /**
      *
      * @param bufImg
@@ -45,31 +42,31 @@ public class DecryptController {
      */
     private String decrypt(java.awt.image.BufferedImage bufImg) {
         String bits = "";
-        
-        String bit = "";
-        
+
+        String temp = "";
+
         a:
         for (int i = 0; i < bufImg.getWidth(); ++i) {
             for (int j = 0; j < bufImg.getHeight(); ++j) {
-                bit += utility.Biswise.getLastBit(bufImg.getRGB(i, j));
-                if (bit.length() == 8) {
-                    if (Integer.parseInt(bit) != 0) {
-                        bits += bit;
+                temp += utility.Biswise.getLastBit(bufImg.getRGB(i, j));
+                if (temp.length() == 8) {
+                    if (Integer.parseInt(temp) != 0) {
+                        bits += temp;
                     } else {
                         break a;
                     }
-                    bit = "";
+                    temp = "";
                 }
-                
+
             }
         }
-        
+
         String[] strArr = bits.split("(?<=\\G........)");
-        
+
         String result = "";
         for (String s : strArr) {
             int value = Integer.parseInt(s, 2);
-            
+
             if (value == 0) {
                 break;
             } else {
@@ -77,12 +74,11 @@ public class DecryptController {
                 System.out.println("" + value);
             }
         }
-        
+
         return result;
     }
 
-    
-        /**
+    /**
      *
      */
     private void openFile() {
@@ -90,12 +86,12 @@ public class DecryptController {
 
         if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
             java.io.File currentFile = fileChooser.getSelectedFile();
-            
+
             try {
                 currentImg = javax.imageio.ImageIO.read(currentFile);
                 frame.getTxtFilePath().setText(currentFile.getAbsolutePath());
                 utility.ViewHelper.pushImgIntoLabel(currentImg, frame.getLblImage());
-                
+
             } catch (IOException ex) {
                 javax.swing.JOptionPane.showMessageDialog(frame, "File is not image");
             }
